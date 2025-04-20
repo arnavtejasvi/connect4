@@ -93,56 +93,64 @@ myfont = pygame.font.SysFont("monospace", 75)
 
 while not game_over:
 
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			sys.exit()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
 
-		if event.type == pygame.MOUSEMOTION:
-			pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
-			posx = event.pos[0]
-			if turn == 0:
-				pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE/2)), RADIUS)
-			else: 
-				pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE/2)), RADIUS)
-		pygame.display.update()
+        # Highlight the column where the player is hovering
+        if event.type == pygame.MOUSEMOTION:
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+            posx = event.pos[0]
+            if turn == 0:
+                pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
+            else:
+                pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
+            pygame.display.update()
 
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
-			#print(event.pos)
-			# Ask for Player 1 Input
-			if turn == 0:
-				posx = event.pos[0]
-				col = int(math.floor(posx/SQUARESIZE))
+        # Handle mouse click for column selection
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+            if turn == 0:
+                posx = event.pos[0]
+                col = int(math.floor(posx / SQUARESIZE))
+            else:
+                posx = event.pos[0]
+                col = int(math.floor(posx / SQUARESIZE))
 
-				if is_valid_location(board, col):
-					row = get_next_open_row(board, col)
-					drop_piece(board, row, col, 1)
+            if is_valid_location(board, col):
+                row = get_next_open_row(board, col)
+                drop_piece(board, row, col, turn + 1)
 
-					if winning_move(board, 1):
-						label = myfont.render("Player 1 wins!!", 1, RED)
-						screen.blit(label, (40,10))
-						game_over = True
+                if winning_move(board, turn + 1):
+                    label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
+                    screen.blit(label, (40, 10))
+                    game_over = True
 
+                print_board(board)
+                draw_board(board)
 
-			# # Ask for Player 2 Input
-			else:				
-				posx = event.pos[0]
-				col = int(math.floor(posx/SQUARESIZE))
+                turn += 1
+                turn = turn % 2
 
-				if is_valid_location(board, col):
-					row = get_next_open_row(board, col)
-					drop_piece(board, row, col, 2)
+        # Handle keyboard input for column selection
+        if event.type == pygame.KEYDOWN:
+            if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7]:
+                col = event.key - pygame.K_1  # Map keys 1-7 to columns 0-6
 
-					if winning_move(board, 2):
-						label = myfont.render("Player 2 wins!!", 1, YELLOW)
-						screen.blit(label, (40,10))
-						game_over = True
+                if is_valid_location(board, col):
+                    row = get_next_open_row(board, col)
+                    drop_piece(board, row, col, turn + 1)
 
-			print_board(board)
-			draw_board(board)
+                    if winning_move(board, turn + 1):
+                        label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
+                        screen.blit(label, (40, 10))
+                        game_over = True
 
-			turn += 1
-			turn = turn % 2
+                    print_board(board)
+                    draw_board(board)
 
-			if game_over:
-				pygame.time.wait(3000)
+                    turn += 1
+                    turn = turn % 2
+
+    if game_over:
+        pygame.time.wait(3000)
