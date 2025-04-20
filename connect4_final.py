@@ -31,29 +31,42 @@ def print_board(board):
 	print(np.flip(board, 0))
 
 def winning_move(board, piece):
-	# Check horizontal locations for win
-	for c in range(COLUMN_COUNT-3):
-		for r in range(ROW_COUNT):
-			if board[r][c] == piece and board[r][c+1] == piece and board[r][c+2] == piece and board[r][c+3] == piece:
-				return True
+    # Check horizontal locations for win
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT):
+            if board[r][c] == piece and board[r][c + 1] == piece and board[r][c + 2] == piece and board[r][c + 3] == piece:
+                return True, [(r, c), (r, c + 1), (r, c + 2), (r, c + 3)]
 
-	# Check vertical locations for win
-	for c in range(COLUMN_COUNT):
-		for r in range(ROW_COUNT-3):
-			if board[r][c] == piece and board[r+1][c] == piece and board[r+2][c] == piece and board[r+3][c] == piece:
-				return True
+    # Check vertical locations for win
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c] == piece and board[r + 2][c] == piece and board[r + 3][c] == piece:
+                return True, [(r, c), (r + 1, c), (r + 2, c), (r + 3, c)]
 
-	# Check positively sloped diaganols
-	for c in range(COLUMN_COUNT-3):
-		for r in range(ROW_COUNT-3):
-			if board[r][c] == piece and board[r+1][c+1] == piece and board[r+2][c+2] == piece and board[r+3][c+3] == piece:
-				return True
+    # Check positively sloped diagonals
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(ROW_COUNT - 3):
+            if board[r][c] == piece and board[r + 1][c + 1] == piece and board[r + 2][c + 2] == piece and board[r + 3][c + 3] == piece:
+                return True, [(r, c), (r + 1, c + 1), (r + 2, c + 2), (r + 3, c + 3)]
 
-	# Check negatively sloped diaganols
-	for c in range(COLUMN_COUNT-3):
-		for r in range(3, ROW_COUNT):
-			if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
-				return True
+    # Check negatively sloped diagonals
+    for c in range(COLUMN_COUNT - 3):
+        for r in range(3, ROW_COUNT):
+            if board[r][c] == piece and board[r - 1][c + 1] == piece and board[r - 2][c + 2] == piece and board[r - 3][c + 3] == piece:
+                return True, [(r, c), (r - 1, c + 1), (r - 2, c + 2), (r - 3, c + 3)]
+
+    return False, []
+
+def highlight_winning_move(winning_coords, piece):
+    highlight_color = WHITE  # Use white to highlight the winning pieces
+    for (r, c) in winning_coords:
+        pygame.draw.circle(
+            screen,
+            highlight_color,
+            (int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)),
+            RADIUS + 5,  # Slightly larger radius for highlighting
+        )
+    pygame.display.update()
 
 def draw_board(board):
 	for c in range(COLUMN_COUNT):
@@ -148,9 +161,11 @@ while True:  # Main loop to allow replaying the game
                     row = get_next_open_row(board, col)
                     drop_piece(board, row, col, turn + 1)
 
-                    if winning_move(board, turn + 1):
+                    if winning_move(board, turn + 1)[0]:
+                        winning_coords = winning_move(board, turn + 1)[1]
                         label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
                         screen.blit(label, (40, 10))
+                        highlight_winning_move(winning_coords, turn + 1)  # Highlight the winning move
                         game_over = True
 
                         # Update scores
@@ -174,9 +189,11 @@ while True:  # Main loop to allow replaying the game
                         row = get_next_open_row(board, col)
                         drop_piece(board, row, col, turn + 1)
 
-                        if winning_move(board, turn + 1):
+                        if winning_move(board, turn + 1)[0]:
+                            winning_coords = winning_move(board, turn + 1)[1]
                             label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
                             screen.blit(label, (40, 10))
+                            highlight_winning_move(winning_coords, turn + 1)  # Highlight the winning move
                             game_over = True
 
                             # Update scores
