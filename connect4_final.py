@@ -207,7 +207,7 @@ def display_scores(player1_score, player2_score):
 
 def choose_game_mode():
     pygame.draw.rect(screen, BLACK, (0, 0, width, height))  # Clear the screen
-    font = pygame.font.SysFont("monospace", 50)
+    font = pygame.font.SysFont("monospace", 35)  # Reduced font size
     label1 = font.render("Press 1 for Player vs Player", 1, WHITE)
     label2 = font.render("Press 2 for Player vs AI", 1, WHITE)
     screen.blit(label1, (40, height // 2 - 100))
