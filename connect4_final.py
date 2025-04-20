@@ -77,10 +77,18 @@ def play_again():
     draw_board(board)
     pygame.display.update()
 
+# Display scores at the top of the screen
+def display_scores(player1_score, player2_score):
+    pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))  # Clear the top area
+    score_label = myfont.render(f"Player 1: {player1_score}  Player 2: {player2_score}", 1, WHITE)
+    screen.blit(score_label, (40, 10))
+    pygame.display.update()
+
 # Initialize scores
 player1_score = 0
 player2_score = 0
 
+# Main game loop
 while True:  # Main loop to allow replaying the game
     board = create_board()
     print_board(board)
@@ -104,6 +112,9 @@ while True:  # Main loop to allow replaying the game
 
     myfont = pygame.font.SysFont("monospace", 75)
 
+    # Display initial scores
+    display_scores(player1_score, player2_score)
+
     while not game_over:
 
         for event in pygame.event.get():
@@ -119,6 +130,7 @@ while True:  # Main loop to allow replaying the game
                     pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
                 else:
                     pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
+                display_scores(player1_score, player2_score)  # Update scores
                 pygame.display.update()
 
             # Handle mouse click for column selection
@@ -178,11 +190,8 @@ while True:  # Main loop to allow replaying the game
                         turn += 1
                         turn = turn % 2
 
-        # Display scores
-        pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
-        score_label = myfont.render(f"Player 1: {player1_score}  Player 2: {player2_score}", 1, WHITE)
-        screen.blit(score_label, (40, 10))
-        pygame.display.update()
+        # Update scores after every event
+        display_scores(player1_score, player2_score)
 
         if game_over:
             pygame.time.wait(3000)
