@@ -67,7 +67,7 @@ def highlight_winning_move(winning_coords, piece):
             RADIUS + 10,  # Slightly larger radius for highlighting
             5  # Thickness of the highlight circle
         )
-    pygame.display.update()
+    pygame.display.update()  # Ensure the screen is updated
 
 def draw_board(board):
 	for c in range(COLUMN_COUNT):
@@ -164,11 +164,18 @@ while True:  # Main loop to allow replaying the game
 
                     if winning_move(board, turn + 1)[0]:
                         winning_coords = winning_move(board, turn + 1)[1]
+                        print(f"Winning coordinates: {winning_coords}")  # Debugging output
                         label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
                         screen.blit(label, (40, 10))
                         pygame.display.update()
-                        highlight_winning_move(winning_coords, turn + 1)  # Highlight the winning move
-                        pygame.time.wait(5000)  # Wait for 5 seconds (5000 milliseconds) to keep the highlight visible
+
+                        # Re-draw the board to ensure proper rendering
+                        draw_board(board)
+
+                        # Highlight the winning pieces
+                        highlight_winning_move(winning_coords, turn + 1)
+
+                        pygame.time.wait(5000)  # Wait for 5 seconds to keep the highlight visible
                         game_over = True
 
                         # Update scores
@@ -194,11 +201,18 @@ while True:  # Main loop to allow replaying the game
 
                         if winning_move(board, turn + 1)[0]:
                             winning_coords = winning_move(board, turn + 1)[1]
+                            print(f"Winning coordinates: {winning_coords}")  # Debugging output
                             label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
                             screen.blit(label, (40, 10))
                             pygame.display.update()
-                            highlight_winning_move(winning_coords, turn + 1)  # Highlight the winning move
-                            pygame.time.wait(5000)  # Wait for 5 seconds (5000 milliseconds) to keep the highlight visible
+
+                            # Re-draw the board to ensure proper rendering
+                            draw_board(board)
+
+                            # Highlight the winning pieces
+                            highlight_winning_move(winning_coords, turn + 1)
+
+                            pygame.time.wait(5000)  # Wait for 5 seconds to keep the highlight visible
                             game_over = True
 
                             # Update scores
