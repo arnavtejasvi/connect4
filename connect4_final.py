@@ -80,8 +80,9 @@ def play_again():
 # Display scores at the top of the screen
 def display_scores(player1_score, player2_score):
     pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))  # Clear the top area
-    score_label = myfont.render(f"Player 1: {player1_score}  Player 2: {player2_score}", 1, WHITE)
-    screen.blit(score_label, (40, 10))
+    small_font = pygame.font.SysFont("monospace", 30)  # Use a smaller font size
+    score_label = small_font.render(f"Player 1: {player1_score}  Player 2: {player2_score}", 1, WHITE)
+    screen.blit(score_label, (40, 10))  # Adjust position if needed
     pygame.display.update()
 
 # Initialize scores
