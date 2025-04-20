@@ -168,6 +168,7 @@ while True:  # Main loop to allow replaying the game
                         screen.blit(label, (40, 10))
                         pygame.display.update()
                         highlight_winning_move(winning_coords, turn + 1)  # Highlight the winning move
+                        pygame.time.wait(5000)  # Wait for 5 seconds (5000 milliseconds) to keep the highlight visible
                         game_over = True
 
                         # Update scores
@@ -197,6 +198,7 @@ while True:  # Main loop to allow replaying the game
                             screen.blit(label, (40, 10))
                             pygame.display.update()
                             highlight_winning_move(winning_coords, turn + 1)  # Highlight the winning move
+                            pygame.time.wait(5000)  # Wait for 5 seconds (5000 milliseconds) to keep the highlight visible
                             game_over = True
 
                             # Update scores
