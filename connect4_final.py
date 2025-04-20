@@ -7,6 +7,7 @@ BLUE = (0,0,255)
 BLACK = (0,0,0)
 RED = (255,0,0)
 YELLOW = (255,255,0)
+WHITE = (255,255,255)
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
@@ -68,74 +69,67 @@ def draw_board(board):
 				pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
 	pygame.display.update()
 
+def play_again():
+    global board, game_over, turn
+    board = create_board()
+    game_over = False
+    turn = 0
+    draw_board(board)
+    pygame.display.update()
 
-board = create_board()
-print_board(board)
-game_over = False
-turn = 0
+# Initialize scores
+player1_score = 0
+player2_score = 0
 
-pygame.init()
+while True:  # Main loop to allow replaying the game
+    board = create_board()
+    print_board(board)
+    game_over = False
+    turn = 0
 
-SQUARESIZE = 100
+    pygame.init()
 
-width = COLUMN_COUNT * SQUARESIZE
-height = (ROW_COUNT+1) * SQUARESIZE
+    SQUARESIZE = 100
 
-size = (width, height)
+    width = COLUMN_COUNT * SQUARESIZE
+    height = (ROW_COUNT + 1) * SQUARESIZE
 
-RADIUS = int(SQUARESIZE/2 - 5)
+    size = (width, height)
 
-screen = pygame.display.set_mode(size)
-draw_board(board)
-pygame.display.update()
+    RADIUS = int(SQUARESIZE / 2 - 5)
 
-myfont = pygame.font.SysFont("monospace", 75)
+    screen = pygame.display.set_mode(size)
+    draw_board(board)
+    pygame.display.update()
 
-while not game_over:
+    myfont = pygame.font.SysFont("monospace", 75)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
+    while not game_over:
 
-        # Highlight the column where the player is hovering
-        if event.type == pygame.MOUSEMOTION:
-            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
-            posx = event.pos[0]
-            if turn == 0:
-                pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
-            else:
-                pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
-            pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
-        # Handle mouse click for column selection
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
-            if turn == 0:
+            # Highlight the column where the player is hovering
+            if event.type == pygame.MOUSEMOTION:
+                pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
                 posx = event.pos[0]
-                col = int(math.floor(posx / SQUARESIZE))
-            else:
-                posx = event.pos[0]
-                col = int(math.floor(posx / SQUARESIZE))
+                if turn == 0:
+                    pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
+                else:
+                    pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE / 2)), RADIUS)
+                pygame.display.update()
 
-            if is_valid_location(board, col):
-                row = get_next_open_row(board, col)
-                drop_piece(board, row, col, turn + 1)
-
-                if winning_move(board, turn + 1):
-                    label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
-                    screen.blit(label, (40, 10))
-                    game_over = True
-
-                print_board(board)
-                draw_board(board)
-
-                turn += 1
-                turn = turn % 2
-
-        # Handle keyboard input for column selection
-        if event.type == pygame.KEYDOWN:
-            if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7]:
-                col = event.key - pygame.K_1  # Map keys 1-7 to columns 0-6
+            # Handle mouse click for column selection
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+                if turn == 0:
+                    posx = event.pos[0]
+                    col = int(math.floor(posx / SQUARESIZE))
+                else:
+                    posx = event.pos[0]
+                    col = int(math.floor(posx / SQUARESIZE))
 
                 if is_valid_location(board, col):
                     row = get_next_open_row(board, col)
@@ -146,11 +140,69 @@ while not game_over:
                         screen.blit(label, (40, 10))
                         game_over = True
 
+                        # Update scores
+                        if turn == 0:
+                            player1_score += 1
+                        else:
+                            player2_score += 1
+
                     print_board(board)
                     draw_board(board)
 
                     turn += 1
                     turn = turn % 2
 
-    if game_over:
-        pygame.time.wait(3000)
+            # Handle keyboard input for column selection
+            if event.type == pygame.KEYDOWN:
+                if event.key in [pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4, pygame.K_5, pygame.K_6, pygame.K_7]:
+                    col = event.key - pygame.K_1  # Map keys 1-7 to columns 0-6
+
+                    if is_valid_location(board, col):
+                        row = get_next_open_row(board, col)
+                        drop_piece(board, row, col, turn + 1)
+
+                        if winning_move(board, turn + 1):
+                            label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
+                            screen.blit(label, (40, 10))
+                            game_over = True
+
+                            # Update scores
+                            if turn == 0:
+                                player1_score += 1
+                            else:
+                                player2_score += 1
+
+                        print_board(board)
+                        draw_board(board)
+
+                        turn += 1
+                        turn = turn % 2
+
+        # Display scores
+        pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+        score_label = myfont.render(f"Player 1: {player1_score}  Player 2: {player2_score}", 1, WHITE)
+        screen.blit(score_label, (40, 10))
+        pygame.display.update()
+
+        if game_over:
+            pygame.time.wait(3000)
+
+            # Prompt for play again
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+            play_again_label = myfont.render("Press R to Play Again or Q to Quit", 1, WHITE)
+            screen.blit(play_again_label, (40, 10))
+            pygame.display.update()
+
+            waiting = True
+            while waiting:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit()
+                        sys.exit()
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:  # Restart the game
+                            play_again()
+                            waiting = False
+                        elif event.key == pygame.K_q:  # Quit the game
+                            pygame.quit()
+                            sys.exit()
