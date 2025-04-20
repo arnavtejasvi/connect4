@@ -176,18 +176,27 @@ def highlight_winning_move(winning_coords, piece):
     pygame.display.update()  # Ensure the screen is updated
 
 def draw_board(board):
-	for c in range(COLUMN_COUNT):
-		for r in range(ROW_COUNT):
-			pygame.draw.rect(screen, BLUE, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE))
-			pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
-	
-	for c in range(COLUMN_COUNT):
-		for r in range(ROW_COUNT):		
-			if board[r][c] == 1:
-				pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
-			elif board[r][c] == 2: 
-				pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
-	pygame.display.update()
+    # Draw the board grid and empty slots
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT):
+            pygame.draw.rect(screen, BLUE, (c * SQUARESIZE, r * SQUARESIZE + SQUARESIZE, SQUARESIZE, SQUARESIZE))
+            pygame.draw.circle(screen, BLACK, (int(c * SQUARESIZE + SQUARESIZE / 2), int(r * SQUARESIZE + SQUARESIZE + SQUARESIZE / 2)), RADIUS)
+
+    # Draw the pieces on the board
+    for c in range(COLUMN_COUNT):
+        for r in range(ROW_COUNT):
+            if board[r][c] == 1:
+                pygame.draw.circle(screen, RED, (int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
+            elif board[r][c] == 2:
+                pygame.draw.circle(screen, YELLOW, (int(c * SQUARESIZE + SQUARESIZE / 2), height - int(r * SQUARESIZE + SQUARESIZE / 2)), RADIUS)
+
+    # Add column numbers at the top
+    font = pygame.font.SysFont("monospace", 30)
+    for c in range(COLUMN_COUNT):
+        label = font.render(str(c + 1), 1, WHITE)  # Column numbers start from 1
+        screen.blit(label, (c * SQUARESIZE + SQUARESIZE / 4, SQUARESIZE / 4))
+
+    pygame.display.update()
 
 def play_again():
     global board, game_over, turn
