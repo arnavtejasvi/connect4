@@ -319,6 +319,37 @@ while True:  # Main loop to allow replaying the game
                     turn += 1
                     turn = turn % 2
 
+            # Handle keyboard input for column selection (PvP)
+            if event.type == pygame.KEYDOWN and game_mode == "PvP":
+                if pygame.K_1 <= event.key <= pygame.K_7:  # Keys 1 to 7
+                    col = event.key - pygame.K_1  # Map keys 1-7 to columns 0-6
+
+                    if is_valid_location(board, col):
+                        row = get_next_open_row(board, col)
+                        drop_piece(board, row, col, turn + 1)
+
+                        if winning_move(board, turn + 1)[0]:
+                            winning_coords = winning_move(board, turn + 1)[1]
+                            label = myfont.render(f"Player {turn + 1} wins!!", 1, RED if turn == 0 else YELLOW)
+                            screen.blit(label, (40, 10))
+                            pygame.display.update()
+
+                            draw_board(board)
+                            highlight_winning_move(winning_coords, turn + 1)
+                            pygame.time.wait(5000)
+                            game_over = True
+
+                            if turn == 0:
+                                player1_score += 1
+                            else:
+                                player2_score += 1
+
+                        print_board(board)
+                        draw_board(board)
+
+                        turn += 1
+                        turn = turn % 2
+
         # AI's turn (PvAI)
         if game_mode == "PvAI" and turn == 1 and not game_over:
             pygame.time.wait(1000)  # Add a delay for the AI's move
@@ -350,39 +381,32 @@ while True:  # Main loop to allow replaying the game
         # Player's turn in PvAI
         if game_mode == "PvAI" and turn == 0 and not game_over:
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEMOTION:
-                    pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
-                    posx = event.pos[0]
-                    pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE / 2)), RADIUS)
-                    pygame.display.update()
+                if event.type == pygame.KEYDOWN:
+                    if pygame.K_1 <= event.key <= pygame.K_7:  # Keys 1 to 7
+                        col = event.key - pygame.K_1  # Map keys 1-7 to columns 0-6
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
-                    posx = event.pos[0]
-                    col = int(math.floor(posx / SQUARESIZE))
+                        if is_valid_location(board, col):
+                            row = get_next_open_row(board, col)
+                            drop_piece(board, row, col, 1)
 
-                    if is_valid_location(board, col):
-                        row = get_next_open_row(board, col)
-                        drop_piece(board, row, col, 1)
+                            if winning_move(board, 1)[0]:
+                                winning_coords = winning_move(board, 1)[1]
+                                label = myfont.render("Player 1 wins!!", 1, RED)
+                                screen.blit(label, (40, 10))
+                                pygame.display.update()
 
-                        if winning_move(board, 1)[0]:
-                            winning_coords = winning_move(board, 1)[1]
-                            label = myfont.render("Player 1 wins!!", 1, RED)
-                            screen.blit(label, (40, 10))
-                            pygame.display.update()
+                                draw_board(board)
+                                highlight_winning_move(winning_coords, 1)
+                                pygame.time.wait(5000)
+                                game_over = True
 
+                                player1_score += 1
+
+                            print_board(board)
                             draw_board(board)
-                            highlight_winning_move(winning_coords, 1)
-                            pygame.time.wait(5000)
-                            game_over = True
 
-                            player1_score += 1
-
-                        print_board(board)
-                        draw_board(board)
-
-                        turn += 1
-                        turn = turn % 2
+                            turn += 1
+                            turn = turn % 2
 
         # Update scores after every event
         display_scores(player1_score, player2_score)
